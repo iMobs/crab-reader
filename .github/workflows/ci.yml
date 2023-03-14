@@ -1,15 +1,9 @@
-# Based on https://github.com/actions-rs/meta/blob/master/recipes/quickstart.md
-#
-# While our "example" application has the platform-specific code,
-# for simplicity we are compiling and testing everything on the Ubuntu environment only.
-# For multi-OS testing see the `cross.yml` workflow.
-
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
     # TODO: Add tags for release
   pull_request:
-    branches: ["main"]
+    branches: ['main']
 
 name: Continuous Integration
 
@@ -40,29 +34,30 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn test
 
-  check-rust:
-    name: Check Backend
+  lint-rust:
+    name: Lint Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      # TODO: see if there's a better way to set working directory
-      - run: cd src-tauri
-
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
+          components: rustfmt, clippy
 
       # TODO: add caching?
 
+      - run: cd src-tauri
+
       - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check
+
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
+      - name: Run cargo clippy
+        run: cargo clippy -- -D warnings
 
   test-rust:
     name: Test Backend
@@ -71,45 +66,10 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - run: cd src-tauri
-
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
+        uses: dtolnay/rust-toolchain@stable
+
+      - run: cd src-tauri
 
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-
-  lint-rust:
-    name: Lint Backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - run: cd src-tauri
-
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
-
-      - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-
-      - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+        run: cargo test
