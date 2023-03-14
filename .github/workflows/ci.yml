@@ -48,16 +48,17 @@ jobs:
 
       # TODO: add caching?
 
-      - run: cd src-tauri
-
       - name: Run cargo check
         run: cargo check
+        working-directory: src-tauri
 
       - name: Run cargo fmt
         run: cargo fmt --all -- --check
+        working-directory: src-tauri
 
       - name: Run cargo clippy
         run: cargo clippy -- -D warnings
+        working-directory: src-tauri
 
   test-rust:
     name: Test Backend
@@ -69,7 +70,6 @@ jobs:
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - run: cd src-tauri
-
       - name: Run cargo test
         run: cargo test
+        working-directory: src-tauri
