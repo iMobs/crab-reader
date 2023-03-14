@@ -1,0 +1,34 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": true
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": true
+    },
+    "react": {
+      "version": "detect"
+    }
+  },
+  "env": { "browser": true, "node": true },
+  "rules": {
+    "curly": "error",
+    "import/order": [
+      "error",
+      { "alphabetize": { "order": "asc" }, "newlines-between": "always" }
+    ],
+    "object-shorthand": "error",
+    "sort-imports": ["error", { "ignoreDeclarationSort": true }]
+  }
+}
