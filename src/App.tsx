@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { debug } from 'tauri-plugin-log-api';
 
 import reactLogo from './assets/react.svg';
 import './App.css';
@@ -7,6 +8,10 @@ import './App.css';
 function App() {
   const [greetMsg, setGreetMsg] = useState('');
   const [name, setName] = useState('');
+
+  useEffect(() => {
+    debug('Hello from the frontend!');
+  }, []);
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
