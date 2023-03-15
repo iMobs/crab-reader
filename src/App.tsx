@@ -46,7 +46,7 @@ function App() {
           <button type="submit">Greet</button>
         </form>
       </div>
-      <p>{greetMsg}</p>
+      <p className="font-bold underline">{greetMsg}</p>
     </div>
   );
 }
