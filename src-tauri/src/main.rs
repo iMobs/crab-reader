@@ -14,7 +14,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn get_feeds(urls: Vec<String>) -> Vec<String> {
+async fn get_feeds(urls: Vec<String>) -> Vec<rss::XmlFeed> {
     rss::get_feeds(&urls).await.unwrap()
 }
 
