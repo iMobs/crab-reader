@@ -2,33 +2,52 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use serde_xml_rs::from_str;
 
-pub async fn get_feeds(urls: &[String]) -> anyhow::Result<Vec<XmlFeed>> {
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error(transparent)]
+    Request(#[from] reqwest::Error),
+    #[error(transparent)]
+    Xml(#[from] serde_xml_rs::Error),
+}
+
+impl Serialize for Error {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.to_string().as_ref())
+    }
+}
+
+type Result<T, E = Error> = std::result::Result<T, E>;
+
+pub async fn get_feeds(urls: &[String]) -> Result<Vec<RssFeed>> {
     futures::future::try_join_all(urls.iter().map(|url| get_feed(url))).await
 }
 
-pub async fn get_feed(url: &str) -> anyhow::Result<XmlFeed> {
+pub async fn get_feed(url: &str) -> Result<RssFeed> {
     let raw = reqwest::get(url).await?.text().await?;
-    let feed: XmlFeed = from_str(&raw)?;
+    let feed: RssFeed = from_str(&raw)?;
     Ok(feed)
 }
 
 #[derive(Debug, PartialEq, Deserialize, Serialize)]
-pub struct XmlFeed {
-    channel: Channel,
+pub struct RssFeed {
+    channel: RssChannel,
 }
 
 #[derive(Debug, PartialEq, Deserialize, Serialize)]
-struct Channel {
+struct RssChannel {
     title: String,
     link: String,
     description: String,
     language: String,
-    item: Vec<XmlItem>,
+    item: Vec<RssItem>,
 }
 
 #[derive(Debug, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-struct XmlItem {
+struct RssItem {
     guid: String,
     title: String,
     author: Option<String>,
@@ -94,13 +113,13 @@ mod tests {
 
         assert_eq!(
             response,
-            [XmlFeed {
-                channel: Channel {
+            [RssFeed {
+                channel: RssChannel {
                     title: "xkcd.com".into(),
                     link: "https://xkcd.com/".into(),
                     description: "xkcd.com: A webcomic of romance and math humor.".into(),
                     language: "en".into(),
-                    item: vec![XmlItem {
+                    item: vec![RssItem {
                         title: "Lymphocytes".into(),
                         author: None,
                         link: "https://xkcd.com/2749/".into(),
