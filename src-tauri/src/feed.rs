@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, str::FromStr};
 
 use chrono::{DateTime, Local};
 use serde::Serialize;
@@ -22,7 +22,7 @@ impl Manager {
         let stories = channel
             .items
             .into_iter()
-            .map(|item| item.try_into())
+            .map(TryInto::try_into)
             .collect::<Result<HashSet<Story>, TryFromError>>()
             .map_err(Error)?;
 
@@ -87,40 +87,37 @@ pub enum TryFromError {
 impl TryFrom<crate::rss::Item> for Story {
     type Error = TryFromError;
     fn try_from(item: crate::rss::Item) -> Result<Self, Self::Error> {
-        let Some(title) = item.title else {
-            return Err(TryFromError::MissingTitle)
-        };
+        let title = item.title.ok_or(TryFromError::MissingTitle)?;
+        let link = item.link.ok_or(TryFromError::MissingLink)?;
+        let description = item.description.ok_or(TryFromError::MissingDescription)?;
+        let pub_date = item.pub_date.ok_or(TryFromError::MissingPubDate)?;
 
-        let Some(link) = item.link else {
-            return Err(TryFromError::MissingLink);
-        };
-
-        let Some(description) = item.description else {
-            return Err(TryFromError::MissingDescription)
-        };
-
-        let Some(pub_date) = item.pub_date else {
-            return Err(TryFromError::MissingPubDate);
-        };
-
-        let pub_date = match pub_date.parse() {
-            Ok(d) => d,
-            Err(_) => match DateTime::parse_from_rfc2822(&pub_date) {
-                Ok(d) => d,
-                Err(_) => match DateTime::parse_from_rfc3339(&pub_date) {
-                    Ok(d) => d,
-                    Err(_) => return Err(TryFromError::ParsePubDate),
-                },
-            },
-        };
+        let pub_date = parse_date(pub_date)?;
 
         let story = Self {
             title,
             link,
             description,
-            pub_date: pub_date.into(),
+            pub_date,
         };
 
         Ok(story)
     }
+}
+
+fn parse_date(date: String) -> Result<DateTime<Local>, TryFromError> {
+    let parsers = [
+        FromStr::from_str,
+        DateTime::parse_from_rfc2822,
+        DateTime::parse_from_rfc3339,
+    ];
+
+    for parser in parsers {
+        if let Ok(date) = parser(&date) {
+            return Ok(date.into());
+        }
+    }
+
+    log::error!("failed to parse date: {}", date);
+    Err(TryFromError::ParsePubDate)
 }
