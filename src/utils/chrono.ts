@@ -1,4 +1,4 @@
-import { formatDistanceToNow, parse } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
 export function formatRelativeDistance(date: Date | string) {
   if (typeof date === 'string') {
