@@ -33,8 +33,6 @@ pub async fn get_feed(url: &str) -> Result<Channel> {
 
 #[cfg(test)]
 mod tests {
-    use rss::Guid;
-
     use super::*;
 
     // XKCD is always a good example
