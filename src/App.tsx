@@ -6,16 +6,17 @@ import reactLogo from './assets/react.svg';
 import './App.css';
 
 function App() {
-  const [urls, setFeeds] = useState<string[]>([]);
+  const [greetMsg, setGreetMsg] = useState('');
   const [name, setName] = useState('');
 
   useEffect(() => {
     debug('Hello from the frontend!');
   }, []);
 
-  useEffect(() => {
-    invoke('get_feeds', { urls }).then((feeds) => console.log(feeds));
-  }, [urls]);
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    setGreetMsg(await invoke('greet', { name }));
+  }
 
   return (
     <div className="container">
@@ -39,17 +40,18 @@ function App() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            setFeeds([...urls, name]);
+            greet();
           }}
         >
           <input
             id="greet-input"
             onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a url..."
+            placeholder="Enter a name..."
           />
-          <button type="submit">Add</button>
+          <button type="submit">Greet</button>
         </form>
       </div>
+      <p className="font-bold underline">{greetMsg}</p>
     </div>
   );
 }
