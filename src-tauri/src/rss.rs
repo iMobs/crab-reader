@@ -1,4 +1,4 @@
-pub use rss::Channel;
+pub use rss::{Channel, Item};
 use serde::Serialize;
 
 #[derive(Debug, thiserror::Error)]

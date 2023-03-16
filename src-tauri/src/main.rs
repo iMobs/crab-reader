@@ -8,9 +8,28 @@ use tauri::async_runtime::RwLock;
 use tauri_plugin_log::LogTarget;
 
 #[tauri::command]
-async fn get_feeds(url_list: tauri::State<'_, FeedList>) -> Result<Vec<rss::Channel>, rss::Error> {
+async fn get_items(url_list: tauri::State<'_, FeedList>) -> Result<Vec<rss::Item>, rss::Error> {
     let url_list = url_list.read().await;
-    rss::get_feeds(&url_list).await
+    let feeds = rss::get_feeds(&url_list).await?;
+
+    let mut items: Vec<rss::Item> = feeds.into_iter().flat_map(|feed| feed.items).collect();
+
+    items.sort_by(|a, b| {
+        use chrono::DateTime;
+
+        let a = DateTime::parse_from_rfc2822(a.pub_date().unwrap()).unwrap();
+        let b = DateTime::parse_from_rfc2822(b.pub_date().unwrap()).unwrap();
+
+        b.cmp(&a)
+    });
+
+    Ok(items)
+}
+
+// if this isn't a result then this complains about lifetimes
+#[tauri::command]
+async fn get_subscriptions(url_list: tauri::State<'_, FeedList>) -> tauri::Result<Vec<String>> {
+    Ok(url_list.read().await.clone())
 }
 
 #[tauri::command]
@@ -45,7 +64,11 @@ fn main() -> anyhow::Result<()> {
                 .level(log::LevelFilter::Debug)
                 .build(),
         )
-        .invoke_handler(tauri::generate_handler![get_feeds, add_feed])
+        .invoke_handler(tauri::generate_handler![
+            get_items,
+            get_subscriptions,
+            add_feed
+        ])
         .run(tauri::generate_context!())
         .context("error while running tauri application")
 }
