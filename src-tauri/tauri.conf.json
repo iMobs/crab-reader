@@ -39,6 +39,7 @@
     "windows": [
       {
         "fullscreen": false,
+        "maximized": true,
         "resizable": true,
         "title": "Crab Reader",
         "width": 800,
