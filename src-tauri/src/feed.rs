@@ -44,7 +44,7 @@ impl Manager {
     }
 
     pub fn subscriptions(&self) -> Vec<Subscription> {
-        let mut subscriptions: Vec<Subscription> = self.subscriptions.clone().into_iter().collect();
+        let mut subscriptions: Vec<Subscription> = self.subscriptions.iter().cloned().collect();
 
         subscriptions.sort_by(|a, b| a.name.cmp(&b.name));
 
@@ -52,7 +52,7 @@ impl Manager {
     }
 
     pub fn stories(&self) -> Vec<Story> {
-        let mut stories: Vec<Story> = self.stories.clone().into_iter().collect();
+        let mut stories: Vec<Story> = self.stories.iter().cloned().collect();
 
         stories.sort_by(|a, b| b.pub_date.cmp(&a.pub_date));
 
