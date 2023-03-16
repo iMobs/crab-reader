@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
 
-export default function AddFeedButton() {
+export default function AddFeed() {
   const [isOpen, setIsOpen] = useState(false);
 
   const onClose = () => {
