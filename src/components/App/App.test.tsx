@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import App from './App';
 
 describe('App', () => {
-  xit('should show links', () => {
+  it.skip('should show links', () => {
     const { getByRole } = render(<App />);
 
     expect(getByRole('link', { name: 'Vite logo' })).toBeInTheDocument();

@@ -6,35 +6,11 @@ import { useForm } from 'react-hook-form';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
 
-const formSchema = z.object({
-  url: z.string().url(),
-});
-
-type FormData = z.infer<typeof formSchema>;
-
 export default function AddFeedButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const { handleSubmit, register, formState, reset } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-  });
-
-  const onSubmit = async (data: FormData) => {
-    log.debug(`Adding feed: ${JSON.stringify(data)}`);
-
-    try {
-      await invoke('add_feed', data);
-      log.debug('success!');
-      onClose();
-    } catch (e) {
-      if (e instanceof Error) {
-        log.error(`Error submitting feed: ${e.message}`);
-      }
-    }
-  };
 
   const onClose = () => {
     setIsOpen(false);
-    reset();
   };
 
   return (
@@ -73,34 +49,7 @@ export default function AddFeedButton() {
                   >
                     Add a Feed
                   </Dialog.Title>
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="flex items-center py-4">
-                      <input
-                        className="appearance-none border-none w-full mr-3 py-1 px-2 leading-tight focus:outline-none text-black"
-                        type="text"
-                        aria-label="Feed URL"
-                        placeholder="http://example.com/feed"
-                        {...register('url')}
-                      />
-                      <input
-                        className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-                        type="submit"
-                        value="Add"
-                      />
-                      <button
-                        className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded"
-                        onClick={onClose}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                    {formState.errors.url && (
-                      <p className="text-red-500 text-xs italic">
-                        {formState.errors.url.message}
-                      </p>
-                    )}
-                  </form>
+                  <AddFeedForm onClose={onClose} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>
@@ -108,5 +57,62 @@ export default function AddFeedButton() {
         </Dialog>
       </Transition>
     </>
+  );
+}
+
+const formSchema = z.object({
+  url: z.string().url(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+function AddFeedForm({ onClose }: { onClose: () => void }) {
+  const { handleSubmit, register, formState } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  });
+
+  const onSubmit = async (data: FormData) => {
+    log.debug(`Adding feed: ${JSON.stringify(data)}`);
+
+    try {
+      await invoke('add_feed', data);
+      log.debug('success!');
+      onClose();
+    } catch (e) {
+      if (e instanceof Error) {
+        log.error(`Error submitting feed: ${e.message}`);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex items-center py-4">
+        <input
+          className="appearance-none border-none w-full mr-3 py-1 px-2 leading-tight focus:outline-none text-black"
+          type="text"
+          aria-label="Feed URL"
+          placeholder="http://example.com/feed"
+          {...register('url')}
+        />
+        <input
+          className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
+          type="submit"
+          value="Add"
+        />
+        <button
+          className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded"
+          onClick={onClose}
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
+      {formState.errors.url && (
+        <p className="text-red-500 text-xs italic">
+          {formState.errors.url.message}
+        </p>
+      )}
+    </form>
   );
 }
