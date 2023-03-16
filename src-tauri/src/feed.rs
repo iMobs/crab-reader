@@ -10,8 +10,10 @@ pub struct Manager {
 }
 
 #[derive(Debug, thiserror::Error)]
-#[error(transparent)]
-pub struct Error(#[from] TryFromError);
+pub enum Error {
+    #[error("ingest error: {0}")]
+    Ingest(#[from] TryFromError),
+}
 
 impl Manager {
     pub fn new() -> Self {
@@ -24,7 +26,7 @@ impl Manager {
             .into_iter()
             .map(TryInto::try_into)
             .collect::<Result<HashSet<Story>, TryFromError>>()
-            .map_err(Error)?;
+            .map_err(Error::Ingest)?;
 
         self.stories.extend(stories);
         self.subscriptions.insert(Subscription {
