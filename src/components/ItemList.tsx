@@ -5,16 +5,15 @@ import useTauriEvent from '~/hooks/useTauriEvent';
 import { formatRelativeDistance } from '~/utils/chrono';
 
 // TODO: Move this or have the backend generate it
-interface Item {
-  title?: string;
-  link?: string;
-  description?: string;
-  guid?: string;
-  pub_date?: string;
+interface Story {
+  title: string;
+  link: string;
+  description: string;
+  pub_date: string;
 }
 
 export default function ItemList() {
-  const [items, setList] = useState<Item[]>([]);
+  const [items, setList] = useState<Story[]>([]);
 
   useEffect(() => {
     getItems();
@@ -25,7 +24,7 @@ export default function ItemList() {
   });
 
   const getItems = async () => {
-    const result = await invoke<Item[]>('get_items');
+    const result = await invoke<Story[]>('get_stories');
     setList(result);
   };
 
@@ -35,7 +34,7 @@ export default function ItemList() {
         <li key={item.link}>
           <h3>
             <span className="font-bold">{item.title}</span>{' '}
-            {formatRelativeDistance(item.pub_date!)} ago
+            {formatRelativeDistance(item.pub_date)} ago
           </h3>
         </li>
       ))}

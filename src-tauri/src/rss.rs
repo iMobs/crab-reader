@@ -1,5 +1,4 @@
 pub use rss::{Channel, Item};
-use serde::Serialize;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -9,22 +8,13 @@ pub enum Error {
     Rss(#[from] rss::Error),
 }
 
-impl Serialize for Error {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.to_string().as_ref())
-    }
-}
-
 type Result<T, E = Error> = std::result::Result<T, E>;
 
-pub async fn get_feeds(urls: &[String]) -> Result<Vec<Channel>> {
-    futures::future::try_join_all(urls.iter().map(|url| get_feed(url))).await
+pub async fn get_channels(urls: &[String]) -> Result<Vec<Channel>> {
+    futures::future::try_join_all(urls.iter().map(|url| get_channel(url))).await
 }
 
-pub async fn get_feed(url: &str) -> Result<Channel> {
+pub async fn get_channel(url: &str) -> Result<Channel> {
     let raw = reqwest::get(url).await?.bytes().await?;
     let channel = rss::Channel::read_from(raw.as_ref())?;
 
@@ -52,7 +42,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_feeds(&[url]).await?;
+        let result = get_channels(&[url]).await?;
         mock.assert_async().await;
 
         assert_eq!(result.len(), 1);

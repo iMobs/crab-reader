@@ -3,8 +3,13 @@ import { useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
 
+interface Subscription {
+  name: string;
+  url: string;
+}
+
 export default function SubscriptionList() {
-  const [urls, setUrls] = useState<string[]>([]);
+  const [urls, setUrls] = useState<Subscription[]>([]);
 
   useEffect(() => {
     getUrls();
@@ -15,14 +20,14 @@ export default function SubscriptionList() {
   });
 
   const getUrls = async () => {
-    const result = await invoke<string[]>('get_subscriptions');
+    const result = await invoke<Subscription[]>('get_subscriptions');
     setUrls(result);
   };
 
   return (
     <ul>
-      {urls.map((url) => (
-        <li key={url}>{url}</li>
+      {urls.map((subscription) => (
+        <li key={subscription.name}>{subscription.name}</li>
       ))}
     </ul>
   );
