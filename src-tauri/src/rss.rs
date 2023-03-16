@@ -1,13 +1,12 @@
-use chrono::{DateTime, Local};
-use quick_xml::de::{from_str, DeError};
-use serde::{Deserialize, Serialize};
+pub use rss::Channel;
+use serde::Serialize;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
     Request(#[from] reqwest::Error),
     #[error(transparent)]
-    Xml(#[from] DeError),
+    Rss(#[from] rss::Error),
 }
 
 impl Serialize for Error {
@@ -21,61 +20,21 @@ impl Serialize for Error {
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
-pub async fn get_feeds(urls: &[String]) -> Result<Vec<RssFeed>> {
+pub async fn get_feeds(urls: &[String]) -> Result<Vec<Channel>> {
     futures::future::try_join_all(urls.iter().map(|url| get_feed(url))).await
 }
 
-pub async fn get_feed(url: &str) -> Result<RssFeed> {
-    let raw = reqwest::get(url).await?.text().await?;
-    let feed = from_str(&raw)?;
+pub async fn get_feed(url: &str) -> Result<Channel> {
+    let raw = reqwest::get(url).await?.bytes().await?;
+    let channel = rss::Channel::read_from(raw.as_ref())?;
 
-    Ok(feed)
-}
-
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
-pub struct RssFeed {
-    channel: RssChannel,
-}
-
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
-struct RssChannel {
-    title: String,
-    link: String,
-    description: String,
-    language: String,
-    item: Vec<RssItem>,
-}
-
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-struct RssItem {
-    guid: String,
-    title: String,
-    author: Option<String>,
-    link: String,
-    #[serde(deserialize_with = "rfc2822_date_format::deserialize")]
-    pub_date: DateTime<Local>,
-    description: String,
-}
-
-mod rfc2822_date_format {
-    use chrono::{DateTime, Local};
-    use serde::{Deserialize, Deserializer};
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Local>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-
-        DateTime::parse_from_rfc2822(&s)
-            .map(Into::into)
-            .map_err(serde::de::Error::custom)
-    }
+    Ok(channel)
 }
 
 #[cfg(test)]
 mod tests {
+    use rss::Guid;
+
     use super::*;
 
     // XKCD is always a good example
@@ -95,31 +54,31 @@ mod tests {
             .create_async()
             .await;
 
-        let response = get_feeds(&[url]).await?;
+        let result = get_feeds(&[url]).await?;
         mock.assert_async().await;
 
-        assert_eq!(response.len(), 1);
-        let feed = &response[0];
-        assert_eq!(feed.channel.title, "xkcd.com");
-        assert_eq!(feed.channel.link, "https://xkcd.com/");
+        assert_eq!(result.len(), 1);
+
+        let channel = &result[0];
+        assert_eq!(channel.title(), "xkcd.com");
+        assert_eq!(channel.link(), "https://xkcd.com/");
         assert_eq!(
-            feed.channel.description,
+            channel.description(),
             "xkcd.com: A webcomic of romance and math humor."
         );
-        assert_eq!(feed.channel.language, "en");
-        assert_eq!(feed.channel.item.len(), 4);
-        let item = &feed.channel.item[0];
-        assert_eq!(item.title, "Flatten the Planets");
-        assert_eq!(item.author, None);
-        assert_eq!(item.link, "https://xkcd.com/2750/");
+        assert_eq!(channel.language(), Some("en"));
+
+        let items = channel.items();
+        assert_eq!(items.len(), 4);
+
+        let item = &items[0];
+        assert_eq!(item.title(), Some("Flatten the Planets"));
+        assert_eq!(item.link(), Some("https://xkcd.com/2750/"));
         assert_eq!(
-            item.pub_date,
-            DateTime::parse_from_rfc2822("Wed, 15 Mar 2023 04:00:00 -0000")?,
-        );
-        assert_eq!(item.guid, "https://xkcd.com/2750/");
-        assert_eq!(
-            item.description,
-            r#"<img src="https://imgs.xkcd.com/comics/flatten_the_planets.png" title="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." alt="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." />"#
+            item.description(),
+            Some(
+                r#"<img src="https://imgs.xkcd.com/comics/flatten_the_planets.png" title="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." alt="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." />"#
+            )
         );
 
         Ok(())

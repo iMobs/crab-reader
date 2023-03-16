@@ -14,7 +14,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn get_feeds(urls: Vec<String>) -> Result<Vec<rss::RssFeed>, rss::Error> {
+async fn get_feeds(urls: Vec<String>) -> Result<Vec<rss::Channel>, rss::Error> {
     rss::get_feeds(&urls).await
 }
 
