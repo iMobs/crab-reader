@@ -8,11 +8,7 @@ pub enum Error {
     Rss(#[from] rss::Error),
 }
 
-type Result<T, E = Error> = std::result::Result<T, E>;
-
-pub async fn get_channels(urls: &[String]) -> Result<Vec<Channel>> {
-    futures::future::try_join_all(urls.iter().map(get_channel)).await
-}
+type Result<T> = std::result::Result<T, Error>;
 
 pub async fn get_channel(url: impl reqwest::IntoUrl) -> Result<Channel> {
     let raw = reqwest::get(url).await?.bytes().await?;
@@ -41,12 +37,9 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_channels(&[format!("{}/feed.xml", server.url())]).await?;
+        let channel = get_channel(format!("{}/feed.xml", server.url())).await?;
         mock.assert_async().await;
 
-        assert_eq!(result.len(), 1);
-
-        let channel = &result[0];
         assert_eq!(channel.title(), "xkcd.com");
         assert_eq!(channel.link(), "https://xkcd.com/");
         assert_eq!(

@@ -3,6 +3,12 @@ use std::{collections::HashSet, str::FromStr};
 use chrono::{DateTime, Local};
 use serde::Serialize;
 
+/// This is the in memory manager to handle storing subscriptions and stories.
+/// The ingest method takes a channel and converts the items into stories and
+/// adds the channel name/link to the subscriptions. Both of these are stored in
+/// hash sets so they can be upserted easily.
+///
+/// Some day this can be replaced with a real database.
 #[derive(Debug, Default)]
 pub struct Manager {
     subscriptions: HashSet<Subscription>,
@@ -20,18 +26,18 @@ impl Manager {
         Self::default()
     }
 
-    pub fn ingest(&mut self, channel: rss::Channel) -> Result<(), Error> {
+    pub fn ingest(&mut self, channel: &rss::Channel) -> Result<(), Error> {
         let stories = channel
             .items
-            .into_iter()
+            .iter()
             .map(TryInto::try_into)
             .collect::<Result<HashSet<Story>, TryFromError>>()
             .map_err(Error::Ingest)?;
 
         self.stories.extend(stories);
         self.subscriptions.insert(Subscription {
-            name: channel.title,
-            url: channel.link,
+            name: channel.title.clone(),
+            url: channel.link.clone(),
         });
 
         Ok(())
@@ -86,20 +92,20 @@ pub enum TryFromError {
     ParsePubDate,
 }
 
-impl TryFrom<crate::rss::Item> for Story {
+impl TryFrom<&crate::rss::Item> for Story {
     type Error = TryFromError;
-    fn try_from(item: crate::rss::Item) -> Result<Self, Self::Error> {
-        let title = item.title.ok_or(TryFromError::MissingTitle)?;
-        let link = item.link.ok_or(TryFromError::MissingLink)?;
-        let description = item.description.ok_or(TryFromError::MissingDescription)?;
-        let pub_date = item.pub_date.ok_or(TryFromError::MissingPubDate)?;
+    fn try_from(item: &crate::rss::Item) -> Result<Self, Self::Error> {
+        let title = item.title().ok_or(TryFromError::MissingTitle)?;
+        let link = item.link().ok_or(TryFromError::MissingLink)?;
+        let description = item.description().ok_or(TryFromError::MissingDescription)?;
+        let pub_date = item.pub_date().ok_or(TryFromError::MissingPubDate)?;
 
         let pub_date = parse_date(pub_date)?;
 
         let story = Self {
-            title,
-            link,
-            description,
+            title: title.to_string(),
+            link: link.to_string(),
+            description: description.to_string(),
             pub_date,
         };
 
@@ -107,7 +113,7 @@ impl TryFrom<crate::rss::Item> for Story {
     }
 }
 
-fn parse_date(date: String) -> Result<DateTime<Local>, TryFromError> {
+fn parse_date(date: &str) -> Result<DateTime<Local>, TryFromError> {
     let parsers = [
         FromStr::from_str,
         DateTime::parse_from_rfc2822,
@@ -115,7 +121,7 @@ fn parse_date(date: String) -> Result<DateTime<Local>, TryFromError> {
     ];
 
     for parser in parsers {
-        if let Ok(date) = parser(&date) {
+        if let Ok(date) = parser(date) {
             return Ok(date.into());
         }
     }
