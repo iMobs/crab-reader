@@ -1,5 +1,4 @@
-pub use rss::Channel;
-use serde::Serialize;
+pub use rss::{Channel, Item};
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -9,22 +8,9 @@ pub enum Error {
     Rss(#[from] rss::Error),
 }
 
-impl Serialize for Error {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.to_string().as_ref())
-    }
-}
+type Result<T> = std::result::Result<T, Error>;
 
-type Result<T, E = Error> = std::result::Result<T, E>;
-
-pub async fn get_feeds(urls: &[String]) -> Result<Vec<Channel>> {
-    futures::future::try_join_all(urls.iter().map(|url| get_feed(url))).await
-}
-
-pub async fn get_feed(url: &str) -> Result<Channel> {
+pub async fn get_channel(url: impl reqwest::IntoUrl) -> Result<Channel> {
     let raw = reqwest::get(url).await?.bytes().await?;
     let channel = rss::Channel::read_from(raw.as_ref())?;
 
@@ -42,7 +28,6 @@ mod tests {
     #[tokio::test]
     async fn fetch_feeds() -> anyhow::Result<()> {
         let mut server = mockito::Server::new();
-        let url = format!("{}/feed.xml", server.url());
 
         let mock = server
             .mock("GET", "/feed.xml")
@@ -52,12 +37,9 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_feeds(&[url]).await?;
+        let channel = get_channel(format!("{}/feed.xml", server.url())).await?;
         mock.assert_async().await;
 
-        assert_eq!(result.len(), 1);
-
-        let channel = &result[0];
         assert_eq!(channel.title(), "xkcd.com");
         assert_eq!(channel.link(), "https://xkcd.com/");
         assert_eq!(
@@ -78,6 +60,7 @@ mod tests {
                 r#"<img src="https://imgs.xkcd.com/comics/flatten_the_planets.png" title="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." alt="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." />"#
             )
         );
+        assert_eq!(item.pub_date(), Some("Wed, 15 Mar 2023 04:00:00 -0000"));
 
         Ok(())
     }
