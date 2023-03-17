@@ -1,16 +1,8 @@
-import { invoke } from '@tauri-apps/api';
 import { useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
+import { Story, getStories } from '~/utils/bindings';
 import { formatRelativeDistance } from '~/utils/chrono';
-
-// TODO: Move this or have the backend generate it
-interface Story {
-  title: string;
-  link: string;
-  description: string;
-  pub_date: string;
-}
 
 export default function ItemList() {
   const [items, setList] = useState<Story[]>([]);
@@ -24,7 +16,7 @@ export default function ItemList() {
   });
 
   const getItems = async () => {
-    const result = await invoke<Story[]>('get_stories');
+    const result = await getStories();
     setList(result);
   };
 

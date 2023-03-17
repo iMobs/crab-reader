@@ -1,8 +1,9 @@
-import { invoke } from '@tauri-apps/api';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import AddFeed from './AddFeed';
+
+import { addFeed } from '~/utils/bindings';
 
 const ResizeObserverMock = vi.fn(() => ({
   observe: vi.fn(),
@@ -11,7 +12,7 @@ const ResizeObserverMock = vi.fn(() => ({
 }));
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
-vi.mock('@tauri-apps/api');
+vi.mock('~/utils/bindings');
 
 describe('AddFeed', () => {
   it('opens a dialog when the button is pressed', async () => {
@@ -88,9 +89,7 @@ describe('AddFeed', () => {
     await user.click(getByRole('button', { name: /add/i }));
 
     // invoke was called
-    expect(invoke).toHaveBeenCalledWith('add_feed', {
-      url: 'https://example.com/feed.xml',
-    });
+    expect(addFeed).toHaveBeenCalledWith('https://example.com/feed.xml');
 
     // form no longer visible
     expect(

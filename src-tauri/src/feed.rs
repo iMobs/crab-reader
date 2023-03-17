@@ -60,13 +60,13 @@ impl Manager {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, specta::Type)]
 pub struct Subscription {
     pub name: String,
     pub url: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, specta::Type)]
 pub struct Story {
     title: String,
     link: String,

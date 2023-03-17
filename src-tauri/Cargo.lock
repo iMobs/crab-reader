@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "Inflector"
+version = "0.11.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -443,9 +449,11 @@ dependencies = [
  "rss",
  "serde",
  "serde_json",
+ "specta",
  "tauri",
  "tauri-build",
  "tauri-plugin-log",
+ "tauri-specta",
  "thiserror",
  "tokio",
 ]
@@ -730,6 +738,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd0c93bb4b0c6d9b77f4435b0ae98c24d17f1c45b2ff844c6151a07256ca923b"
 
 [[package]]
+name = "document-features"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e493c573fce17f00dcab13b6ac057994f3ce17d1af4dc39bfd482b83c6eb6157"
+dependencies = [
+ "litrs",
+]
+
+[[package]]
 name = "dtoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -749,6 +766,12 @@ name = "dunce"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0bd4b30a6560bbd9b4620f4de34c3f14f60848e58a9b7216801afcb4c7b31c3c"
+
+[[package]]
+name = "either"
+version = "1.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
 
 [[package]]
 name = "embed_plist"
@@ -1492,6 +1515,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "indoc"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfa799dd5ed20a7e349f3b4639aa80d74549c81716d9ec4f994c9b5815598306"
+
+[[package]]
+name = "indoc"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f2cb48b81b1dc9f39676bf99f5499babfec7cd8fe14307f7b3d747208fb5690"
+
+[[package]]
 name = "infer"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1524,6 +1559,15 @@ name = "ipnet"
 version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "30e22bd8629359895450b59ea7a776c850561b96a3b1d31321c1949d9e6c9146"
+
+[[package]]
+name = "itertools"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
+dependencies = [
+ "either",
+]
 
 [[package]]
 name = "itoa"
@@ -1647,6 +1691,12 @@ name = "linux-raw-sys"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f051f77a7c8e6957c0696eac88f26b0117e54f52d3fc682ab19397a8812846a4"
+
+[[package]]
+name = "litrs"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9275e0933cf8bb20f008924c0cb07a0692fe54d8064996520bf998de9eb79aa"
 
 [[package]]
 name = "lock_api"
@@ -2830,6 +2880,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "specta"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a27c41db2eeac1d45f34554de1f2a4f33c0ff357abdeb87a85c4398cbc29917"
+dependencies = [
+ "chrono",
+ "document-features",
+ "indoc 1.0.9",
+ "once_cell",
+ "paste",
+ "serde",
+ "serde_json",
+ "specta-macros",
+ "tauri",
+ "thiserror",
+]
+
+[[package]]
+name = "specta-macros"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf06715ef4029f77b5e4796cddf59577b0411174769e7c9120c9e9486e4bab3b"
+dependencies = [
+ "Inflector",
+ "itertools",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "termcolor",
+]
+
+[[package]]
 name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3126,6 +3208,21 @@ dependencies = [
  "webview2-com",
  "windows 0.39.0",
  "wry",
+]
+
+[[package]]
+name = "tauri-specta"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23419889204476d5a70a04077d4628061a5bb667b18804a4572df2fe6ccb8ba5"
+dependencies = [
+ "heck 0.4.1",
+ "indoc 2.0.1",
+ "serde",
+ "serde_json",
+ "specta",
+ "tauri",
+ "thiserror",
 ]
 
 [[package]]

@@ -6,8 +6,12 @@ mod rss;
 
 use anyhow::Context;
 use serde::Serialize;
+#[cfg(debug_assertions)]
+use specta::collect_types;
 use tauri::async_runtime::RwLock;
 use tauri_plugin_log::LogTarget;
+#[cfg(debug_assertions)]
+use tauri_specta::ts;
 
 #[derive(Debug, thiserror::Error)]
 enum CommandError {
@@ -33,6 +37,7 @@ impl Serialize for CommandError {
 type CommandResult<T> = Result<T, CommandError>;
 
 #[tauri::command]
+#[specta::specta]
 async fn get_stories(
     manager: tauri::State<'_, RwLock<feed::Manager>>,
 ) -> CommandResult<Vec<feed::Story>> {
@@ -40,6 +45,7 @@ async fn get_stories(
 }
 
 #[tauri::command]
+#[specta::specta]
 async fn get_subscriptions(
     manager: tauri::State<'_, RwLock<feed::Manager>>,
 ) -> CommandResult<Vec<feed::Subscription>> {
@@ -47,6 +53,7 @@ async fn get_subscriptions(
 }
 
 #[tauri::command]
+#[specta::specta]
 async fn add_feed(
     url: String,
     manager: tauri::State<'_, RwLock<feed::Manager>>,
@@ -62,6 +69,7 @@ async fn add_feed(
 }
 
 #[tauri::command]
+#[specta::specta]
 async fn refresh(
     manager: tauri::State<'_, RwLock<feed::Manager>>,
     window: tauri::Window,
@@ -87,6 +95,12 @@ async fn refresh(
 }
 
 fn main() -> anyhow::Result<()> {
+    #[cfg(debug_assertions)]
+    ts::export(
+        collect_types![get_stories, get_subscriptions, add_feed, refresh],
+        "../src/utils/bindings.ts",
+    )?;
+
     tauri::Builder::default()
         .manage(RwLock::new(feed::Manager::new()))
         .plugin(
@@ -107,4 +121,19 @@ fn main() -> anyhow::Result<()> {
         ])
         .run(tauri::generate_context!())
         .context("error while running tauri application")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn export_bindings() -> anyhow::Result<()> {
+        ts::export(
+            collect_types![get_stories, get_subscriptions, add_feed, refresh],
+            "../src/utils/bindings.ts",
+        )?;
+
+        Ok(())
+    }
 }

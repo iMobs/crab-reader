@@ -1,10 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { invoke } from '@tauri-apps/api';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
+
+import { addFeed } from '~/utils/bindings';
 
 export default function AddFeed() {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +76,7 @@ function AddFeedForm({ onClose }: { onClose: () => void }) {
     log.debug(`Adding feed: ${JSON.stringify(data)}`);
 
     try {
-      await invoke('add_feed', data);
+      await addFeed(data.url);
       log.debug('success!');
       onClose();
     } catch (e) {

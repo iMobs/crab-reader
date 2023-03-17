@@ -1,12 +1,7 @@
-import { invoke } from '@tauri-apps/api';
 import { useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
-
-interface Subscription {
-  name: string;
-  url: string;
-}
+import { Subscription, getSubscriptions } from '~/utils/bindings';
 
 export default function SubscriptionList() {
   const [urls, setUrls] = useState<Subscription[]>([]);
@@ -20,7 +15,7 @@ export default function SubscriptionList() {
   });
 
   const getUrls = async () => {
-    const result = await invoke<Subscription[]>('get_subscriptions');
+    const result = await getSubscriptions();
     setUrls(result);
   };
 
