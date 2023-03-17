@@ -60,6 +60,7 @@ mod tests {
                 r#"<img src="https://imgs.xkcd.com/comics/flatten_the_planets.png" title="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." alt="We'll turn the asteroid belt into ball bearings to go between different rings orbiting at different speeds." />"#
             )
         );
+        assert_eq!(item.pub_date(), Some("Wed, 15 Mar 2023 04:00:00 -0000"));
 
         Ok(())
     }

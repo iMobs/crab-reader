@@ -74,7 +74,7 @@ pub struct Story {
     pub_date: DateTime<Local>,
 }
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, PartialEq, thiserror::Error)]
 pub enum TryFromError {
     #[error("missing title")]
     MissingTitle,
@@ -128,4 +128,79 @@ fn parse_date(date: &str) -> Result<DateTime<Local>, TryFromError> {
 
     log::error!("failed to parse date: {}", date);
     Err(TryFromError::ParsePubDate)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_ingests_channels() -> anyhow::Result<()> {
+        let mut item = rss::Item::default();
+        item.set_title("Test Item".to_string());
+        item.set_link("http://example.com".to_string());
+        item.set_description("Test Description".to_string());
+        item.set_pub_date("Wed, 15 Mar 2023 04:00:00 -0000".to_string());
+
+        let mut channel = rss::Channel::default();
+        channel.set_title("Test Channel");
+        channel.set_link("http://example.com/feed");
+        channel.set_items(vec![item]);
+
+        let mut manager = Manager::new();
+        manager.ingest(&channel)?;
+
+        let subscriptions = manager.subscriptions();
+        assert_eq!(subscriptions.len(), 1);
+        let subscription = &subscriptions[0];
+        assert_eq!(subscription.name, "Test Channel");
+        assert_eq!(subscription.url, "http://example.com/feed");
+
+        let stories = manager.stories();
+        assert_eq!(stories.len(), 1);
+        let story = &stories[0];
+        assert_eq!(story.title, "Test Item");
+        assert_eq!(story.link, "http://example.com");
+        assert_eq!(story.description, "Test Description");
+        assert_eq!(
+            story.pub_date,
+            "2023-03-15T04:00:00+00:00".parse::<DateTime<Local>>()?
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn it_converts_item_to_story() -> anyhow::Result<()> {
+        let mut item = rss::Item::default();
+        assert_eq!(Story::try_from(&item), Err(TryFromError::MissingTitle));
+        item.set_title("Test Item".to_string());
+        assert_eq!(Story::try_from(&item), Err(TryFromError::MissingLink));
+        item.set_link("http://example.com".to_string());
+        assert_eq!(
+            Story::try_from(&item),
+            Err(TryFromError::MissingDescription)
+        );
+        item.set_description("Test Description".to_string());
+        assert_eq!(Story::try_from(&item), Err(TryFromError::MissingPubDate));
+        item.set_pub_date("Wed, 15 Mar 2023 04:00:00 -0000".to_string());
+
+        let story = Story::try_from(&item)?;
+        assert_eq!(story.title, "Test Item");
+        assert_eq!(story.link, "http://example.com");
+        assert_eq!(story.description, "Test Description");
+        assert_eq!(
+            story.pub_date,
+            "2023-03-15T04:00:00+00:00".parse::<DateTime<Local>>()?
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn it_parses_date_formats() {
+        assert!(parse_date("2023-03-15T04:00:00+00:00").is_ok());
+        assert!(parse_date("Wed, 15 Mar 2023 04:00:00 -0000").is_ok());
+        assert_eq!(parse_date("not a date"), Err(TryFromError::ParsePubDate));
+    }
 }
