@@ -4,21 +4,21 @@ import useTauriEvent from '~/hooks/useTauriEvent';
 import { Story, getStories } from '~/lib/bindings';
 import { formatRelativeDistance } from '~/lib/chrono';
 
-export default function ItemList() {
-  const [items, setList] = useState<Story[]>([]);
+export default function StoryList() {
+  const [stories, setStories] = useState<Story[]>([]);
 
   useEffect(() => {
-    getItems();
+    loadStories();
   }, []);
 
   useTauriEvent('feed-refresh', () => {
-    getItems();
+    loadStories();
   });
 
-  const getItems = async () => {
+  const loadStories = async () => {
     try {
       const result = await getStories();
-      setList(result);
+      setStories(result);
     } catch (error) {
       console.error(error);
     }
@@ -26,7 +26,7 @@ export default function ItemList() {
 
   return (
     <ul className="h-screen">
-      {items.map((item) => (
+      {stories.map((item) => (
         <li key={item.link}>
           <h3>
             <span className="font-bold">{item.title}</span>{' '}

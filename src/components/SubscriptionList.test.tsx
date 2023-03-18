@@ -12,7 +12,7 @@ const getSubscriptionsMock = getSubscriptions as MockedFunction<
 >;
 
 describe('SubscriptionList', () => {
-  it('renders titles and relative dates of items', async () => {
+  it('renders names of subscriptions', async () => {
     vi.setSystemTime('2023-03-16');
     getSubscriptionsMock.mockResolvedValue([
       {
