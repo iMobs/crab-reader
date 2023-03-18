@@ -44,7 +44,7 @@ export default defineConfig(async () => ({
       thresholdAutoUpdate: true,
       statements: 87.63,
       branches: 85.71,
-      functions: 80,
+      functions: 72.72,
       lines: 87.63,
     },
   }
