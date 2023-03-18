@@ -20,3 +20,5 @@ mockIPC(async (cmd) => {
 });
 
 beforeEach(() => mockWindows('main'));
+
+vi.stubGlobal('__TAURI_INVOKE__', vi.fn());

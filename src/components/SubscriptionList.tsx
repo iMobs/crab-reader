@@ -15,8 +15,12 @@ export default function SubscriptionList() {
   });
 
   const getUrls = async () => {
-    const result = await getSubscriptions();
-    setUrls(result);
+    try {
+      const result = await getSubscriptions();
+      setUrls(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

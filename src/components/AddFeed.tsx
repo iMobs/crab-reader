@@ -79,10 +79,8 @@ function AddFeedForm({ onClose }: { onClose: () => void }) {
       await addFeed(data.url);
       log.debug('success!');
       onClose();
-    } catch (e) {
-      if (e instanceof Error) {
-        log.error(`Error submitting feed: ${e.message}`);
-      }
+    } catch (error) {
+      console.error(error);
     }
   };
 

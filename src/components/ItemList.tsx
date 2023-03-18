@@ -16,8 +16,12 @@ export default function ItemList() {
   });
 
   const getItems = async () => {
-    const result = await getStories();
-    setList(result);
+    try {
+      const result = await getStories();
+      setList(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
