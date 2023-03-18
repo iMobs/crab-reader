@@ -91,6 +91,7 @@ jobs:
         working-directory: src-tauri
 
   build:
+    name: Build Release
     strategy:
       fail-fast: true
       matrix:
