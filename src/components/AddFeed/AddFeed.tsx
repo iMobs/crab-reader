@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
 
-import { addFeed } from '~/utils/bindings';
+import { addFeed } from '~/lib/bindings';
 
 export default function AddFeed() {
   const [isOpen, setIsOpen] = useState(false);

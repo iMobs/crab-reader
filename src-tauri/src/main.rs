@@ -98,7 +98,7 @@ fn main() -> anyhow::Result<()> {
     #[cfg(debug_assertions)]
     ts::export(
         collect_types![get_stories, get_subscriptions, add_feed, refresh],
-        "../src/utils/bindings.ts",
+        "../src/lib/bindings.ts",
     )?;
 
     tauri::Builder::default()
@@ -121,19 +121,4 @@ fn main() -> anyhow::Result<()> {
         ])
         .run(tauri::generate_context!())
         .context("error while running tauri application")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn export_bindings() -> anyhow::Result<()> {
-        ts::export(
-            collect_types![get_stories, get_subscriptions, add_feed, refresh],
-            "../src/utils/bindings.ts",
-        )?;
-
-        Ok(())
-    }
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
-import { Story, getStories } from '~/utils/bindings';
-import { formatRelativeDistance } from '~/utils/chrono';
+import { Story, getStories } from '~/lib/bindings';
+import { formatRelativeDistance } from '~/lib/chrono';
 
 export default function ItemList() {
   const [items, setList] = useState<Story[]>([]);

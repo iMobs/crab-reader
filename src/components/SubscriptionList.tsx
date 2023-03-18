@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
-import { Subscription, getSubscriptions } from '~/utils/bindings';
+import { Subscription, getSubscriptions } from '~/lib/bindings';
 
 export default function SubscriptionList() {
   const [urls, setUrls] = useState<Subscription[]>([]);

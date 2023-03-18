@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import AddFeed from './AddFeed';
 
-import { addFeed } from '~/utils/bindings';
+import { addFeed } from '~/lib/bindings';
 
 const ResizeObserverMock = vi.fn(() => ({
   observe: vi.fn(),
@@ -12,7 +12,7 @@ const ResizeObserverMock = vi.fn(() => ({
 }));
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
-vi.mock('~/utils/bindings');
+vi.mock('~/lib/bindings');
 
 describe('AddFeed', () => {
   it('opens a dialog when the button is pressed', async () => {

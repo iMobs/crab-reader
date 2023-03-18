@@ -1,4 +1,4 @@
-src/utils/bindings.ts
+src/lib/bindings.ts
 vite.config.ts
 postcss.config.cjs
 tailwind.config.cjs
