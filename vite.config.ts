@@ -38,6 +38,14 @@ export default defineConfig(async () => ({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test-setup.ts'
+    setupFiles: './src/test-setup.ts',
+    coverage: {
+      enabled: true,
+      thresholdAutoUpdate: true,
+      statements: 87.63,
+      branches: 85.71,
+      functions: 80,
+      lines: 87.63,
+    },
   }
 }));
