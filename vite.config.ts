@@ -1,9 +1,9 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 
 const mobile =
-  process.env.TAURI_PLATFORM === "android" ||
-  process.env.TAURI_PLATFORM === "ios";
+  process.env.TAURI_PLATFORM === 'android' ||
+  process.env.TAURI_PLATFORM === 'ios';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -11,7 +11,7 @@ export default defineConfig(async () => ({
 
   resolve: {
     alias: {
-      "~": "/src",
+      '~': '/src',
     },
   },
 
@@ -25,12 +25,12 @@ export default defineConfig(async () => ({
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ["VITE_", "TAURI_"],
+  envPrefix: ['VITE_', 'TAURI_'],
   build: {
     // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
+    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
     // don't minify for debug builds
-    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
@@ -41,11 +41,12 @@ export default defineConfig(async () => ({
     setupFiles: './src/test-setup.ts',
     coverage: {
       enabled: true,
+      provider: 'c8',
       thresholdAutoUpdate: true,
       statements: 87.63,
       branches: 85.71,
       functions: 72.72,
       lines: 87.63,
     },
-  }
+  },
 }));
