@@ -79,6 +79,7 @@ function AddFeedForm({ onClose }: { onClose: () => void }) {
       await addFeed(data.url);
       log.debug('success!');
       onClose();
+      /* c8 ignore next 3 */
     } catch (error) {
       console.error(error);
     }
