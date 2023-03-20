@@ -18,7 +18,7 @@ describe('StoryList', () => {
     getStoriesMock.mockResolvedValue([
       {
         title: 'Test Story',
-        description: 'This is a test',
+        content: 'This is a test',
         link: 'https://example.com',
         pub_date: '2023-03-15',
       },
