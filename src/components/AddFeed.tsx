@@ -2,13 +2,17 @@ import { Dialog, Transition } from '@headlessui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
 
 import { addFeed } from '~/lib/bindings';
 
 export default function AddFeed() {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+
+  console.log(i18n.resolvedLanguage);
 
   const onClose = () => {
     setIsOpen(false);
@@ -17,7 +21,7 @@ export default function AddFeed() {
   return (
     <>
       <div>
-        <button onClick={() => setIsOpen(true)}>Add Feed +</button>
+        <button onClick={() => setIsOpen(true)}>{t('Add Feed')} +</button>
       </div>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog className="relative z-10" onClose={onClose}>
@@ -48,7 +52,7 @@ export default function AddFeed() {
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900 dark:text-white"
                   >
-                    Add a Feed
+                    {t('Add a Feed')}
                   </Dialog.Title>
                   <AddFeedForm onClose={onClose} />
                 </Dialog.Panel>
@@ -68,6 +72,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 function AddFeedForm({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const { handleSubmit, register, formState } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
@@ -90,26 +95,26 @@ function AddFeedForm({ onClose }: { onClose: () => void }) {
         <input
           className="appearance-none border-none w-full mr-3 py-1 px-2 leading-tight focus:outline-none text-black"
           type="text"
-          aria-label="Feed URL"
+          aria-label={t('Feed URL') as string}
           placeholder="http://example.com/feed"
           {...register('url')}
         />
         <input
           className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
           type="submit"
-          value="Add"
+          value={t('Add') as string}
         />
         <button
           className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded"
           onClick={onClose}
           type="button"
         >
-          Cancel
+          {t('Cancel')}
         </button>
       </div>
       {formState.errors.url && (
         <p className="text-red-500 text-xs italic">
-          {formState.errors.url.message}
+          {t(formState.errors.url.message as string)}
         </p>
       )}
     </form>
