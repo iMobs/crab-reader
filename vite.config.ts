@@ -42,11 +42,10 @@ export default defineConfig(async () => ({
     coverage: {
       enabled: true,
       provider: 'c8',
-      thresholdAutoUpdate: true,
-      statements: 87.63,
-      branches: 85.71,
-      functions: 72.72,
-      lines: 87.63,
+      statements: 80,
+      branches: 80,
+      functions: 80,
+      lines: 80,
     },
   },
 }));

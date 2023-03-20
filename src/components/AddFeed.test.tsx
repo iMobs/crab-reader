@@ -1,9 +1,8 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MockedFunction } from 'vitest';
 
 import AddFeed from './AddFeed';
-
-import { addFeed } from '~/lib/bindings';
 
 const ResizeObserverMock = vi.fn(() => ({
   observe: vi.fn(),
@@ -12,7 +11,10 @@ const ResizeObserverMock = vi.fn(() => ({
 }));
 
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
-vi.mock('~/lib/bindings');
+
+const invokeMock = window.__TAURI_INVOKE__ as MockedFunction<
+  typeof window.__TAURI_INVOKE__
+>;
 
 describe('AddFeed', () => {
   it('opens a dialog when the button is pressed', async () => {
@@ -89,7 +91,9 @@ describe('AddFeed', () => {
     await user.click(getByRole('button', { name: /add/i }));
 
     // invoke was called
-    expect(addFeed).toHaveBeenCalledWith('https://example.com/feed.xml');
+    expect(invokeMock).toHaveBeenCalledWith('add_feed', {
+      url: 'https://example.com/feed.xml',
+    });
 
     // form no longer visible
     expect(

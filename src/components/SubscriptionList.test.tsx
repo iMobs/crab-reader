@@ -3,18 +3,14 @@ import { MockedFunction } from 'vitest';
 
 import SubscriptionList from './SubscriptionList';
 
-import { getSubscriptions } from '~/lib/bindings';
-
-vi.mock('~/lib/bindings');
-
-const getSubscriptionsMock = getSubscriptions as MockedFunction<
-  typeof getSubscriptions
+const invokeMock = window.__TAURI_INVOKE__ as MockedFunction<
+  typeof window.__TAURI_INVOKE__
 >;
 
 describe('SubscriptionList', () => {
   it('renders names of subscriptions', async () => {
     vi.setSystemTime('2023-03-16');
-    getSubscriptionsMock.mockResolvedValue([
+    invokeMock.mockResolvedValue([
       {
         name: 'Test Subscription',
         url: 'https://example.com',
