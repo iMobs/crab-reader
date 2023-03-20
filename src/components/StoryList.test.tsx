@@ -4,20 +4,19 @@ import { MockedFunction } from 'vitest';
 
 import StoryList from './StoryList';
 
-import { getStories } from '~/lib/bindings';
+const invokeMock = window.__TAURI_INVOKE__ as MockedFunction<
+  typeof window.__TAURI_INVOKE__
+>;
 
 const setStoryMock = vi.fn();
 vi.mock('~/contexts/currentStory', () => ({
   useCurrentStory: vi.fn(() => ({ setStory: setStoryMock })),
 }));
-vi.mock('~/lib/bindings');
-
-const getStoriesMock = getStories as MockedFunction<typeof getStories>;
 
 describe('StoryList', () => {
   it('renders titles and relative dates of stories', async () => {
     vi.setSystemTime('2023-03-16');
-    getStoriesMock.mockResolvedValue([
+    invokeMock.mockResolvedValue([
       {
         title: 'Test Story',
         content: 'This is a test',
@@ -41,7 +40,7 @@ describe('StoryList', () => {
       link: 'https://example.com',
       pub_date: '2023-03-15',
     };
-    getStoriesMock.mockResolvedValue([story]);
+    invokeMock.mockResolvedValue([story]);
 
     const user = userEvent.setup();
     const { findByText } = render(<StoryList />);

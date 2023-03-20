@@ -13,7 +13,6 @@ export default function StoryList() {
     loadStories();
   }, []);
 
-  /* c8 ignore next 3 */
   useTauriEvent('feed-refresh', () => {
     loadStories();
   });
@@ -22,7 +21,6 @@ export default function StoryList() {
     try {
       const result = await getStories();
       setStories(result);
-      /* c8 ignore next 3 */
     } catch (error) {
       console.error(error);
     }

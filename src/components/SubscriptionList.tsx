@@ -10,7 +10,6 @@ export default function SubscriptionList() {
     getUrls();
   }, []);
 
-  /* c8 ignore next 3 */
   useTauriEvent('feed-refresh', () => {
     getUrls();
   });
@@ -19,7 +18,6 @@ export default function SubscriptionList() {
     try {
       const result = await getSubscriptions();
       setUrls(result);
-      /* c8 ignore next 3 */
     } catch (error) {
       console.error(error);
     }
