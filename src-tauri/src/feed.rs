@@ -97,7 +97,10 @@ impl TryFrom<&crate::rss::Item> for Story {
     fn try_from(item: &crate::rss::Item) -> Result<Self, Self::Error> {
         let title = item.title().ok_or(TryFromError::MissingTitle)?;
         let link = item.link().ok_or(TryFromError::MissingLink)?;
-        let description = item.description().ok_or(TryFromError::MissingDescription)?;
+        let description = item
+            .content()
+            .or(item.description())
+            .ok_or(TryFromError::MissingDescription)?;
         let pub_date = item.pub_date().ok_or(TryFromError::MissingPubDate)?;
 
         let pub_date = parse_date(pub_date)?;
