@@ -5,6 +5,9 @@ import StoryList from './StoryList';
 
 import { getStories } from '~/lib/bindings';
 
+vi.mock('~/contexts/currentStory', () => ({
+  useCurrentStory: vi.fn(() => ({ setStory: vi.fn() })),
+}));
 vi.mock('~/lib/bindings');
 
 const getStoriesMock = getStories as MockedFunction<typeof getStories>;
