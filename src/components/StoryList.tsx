@@ -29,9 +29,11 @@ export default function StoryList() {
   return (
     <ul className="h-screen">
       {stories.map((story) => (
-        <li key={story.link} onClick={() => setStory(story)}>
+        <li key={story.link}>
           <h3>
-            <span className="font-bold">{story.title}</span>{' '}
+            <button className="font-bold" onClick={() => setStory(story)}>
+              {story.title}
+            </button>{' '}
             {formatRelativeDistance(story.pub_date)} ago
           </h3>
         </li>
