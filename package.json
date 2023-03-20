@@ -20,7 +20,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.5",
-    "sanitize-html": "^2.10.0",
     "tauri-plugin-log-api": "https://github.com/tauri-apps/tauri-plugin-log",
     "zod": "^3.21.4"
   },
@@ -36,7 +35,6 @@
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
-    "@types/sanitize-html": "^2.9.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
     "@vitejs/plugin-react": "^3.0.0",

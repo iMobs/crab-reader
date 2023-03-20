@@ -108,7 +108,7 @@ impl TryFrom<&crate::rss::Item> for Story {
         let story = Self {
             title: title.to_string(),
             link: link.to_string(),
-            content: content.to_string(),
+            content: ammonia::clean(content),
             pub_date,
         };
 
