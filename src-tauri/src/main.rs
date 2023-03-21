@@ -29,7 +29,11 @@ fn main() -> anyhow::Result<()> {
                     // LogTarget::LogDir,
                     LogTarget::Webview,
                 ])
-                .level(log::LevelFilter::Info)
+                .level(if cfg!(debug_assertions) {
+                    log::LevelFilter::Debug
+                } else {
+                    log::LevelFilter::Info
+                })
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
