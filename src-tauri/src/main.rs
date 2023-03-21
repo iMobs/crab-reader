@@ -9,7 +9,7 @@ use anyhow::Context;
 use commands::*;
 #[cfg(debug_assertions)]
 use specta::collect_types;
-use tauri::async_runtime::RwLock;
+use tauri::{async_runtime::RwLock, Manager};
 use tauri_plugin_log::LogTarget;
 #[cfg(debug_assertions)]
 use tauri_specta::ts;
@@ -22,7 +22,6 @@ fn main() -> anyhow::Result<()> {
     )?;
 
     tauri::Builder::default()
-        .manage(RwLock::new(feed::Manager::new()))
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([
@@ -30,7 +29,11 @@ fn main() -> anyhow::Result<()> {
                     // LogTarget::LogDir,
                     LogTarget::Webview,
                 ])
-                .level(log::LevelFilter::Debug)
+                .level(if cfg!(debug_assertions) {
+                    log::LevelFilter::Debug
+                } else {
+                    log::LevelFilter::Info
+                })
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![
@@ -39,6 +42,15 @@ fn main() -> anyhow::Result<()> {
             add_feed,
             refresh,
         ])
+        .setup(setup_app)
         .run(tauri::generate_context!())
         .context("error while running tauri application")
+}
+
+fn setup_app(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    let data_dir = app.path_resolver().app_data_dir().expect("no app data dir");
+    let manager = feed::Manager::load(data_dir);
+    app.manage(RwLock::new(manager));
+
+    Ok(())
 }

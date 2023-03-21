@@ -1,7 +1,13 @@
-use std::{collections::HashSet, str::FromStr};
+use std::{
+    collections::HashMap,
+    fs::{create_dir_all, File},
+    io::{BufReader, BufWriter},
+    path::PathBuf,
+    str::FromStr,
+};
 
 use chrono::{DateTime, Local};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// This is the in memory manager to handle storing subscriptions and stories.
 /// The ingest method takes a channel and converts the items into stories and
@@ -11,40 +17,74 @@ use serde::Serialize;
 /// Some day this can be replaced with a real database.
 #[derive(Debug, Default)]
 pub struct Manager {
-    subscriptions: HashSet<Subscription>,
-    stories: HashSet<Story>,
+    directory: PathBuf,
+    subscriptions: HashMap<String, Subscription>,
 }
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("ingest error: {0}")]
     Ingest(#[from] TryFromError),
+
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }
 
 impl Manager {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn load(directory: PathBuf) -> Self {
+        let subscriptions = if let Ok(file) = File::open(directory.join("subscriptions.json")) {
+            let reader = BufReader::new(file);
+            serde_json::from_reader(reader).unwrap_or_default()
+        } else {
+            HashMap::new()
+        };
+
+        Self {
+            directory,
+            subscriptions,
+        }
     }
 
-    pub fn ingest(&mut self, channel: &rss::Channel) -> Result<(), Error> {
-        let stories = channel
-            .items
-            .iter()
-            .map(TryInto::try_into)
-            .collect::<Result<HashSet<Story>, TryFromError>>()
-            .map_err(Error::Ingest)?;
+    pub fn ingest(&mut self, url: &str, channel: &rss::Channel) -> Result<(), Error> {
+        let subscription = self
+            .subscriptions
+            .entry(url.to_string())
+            .or_insert_with(|| Subscription {
+                name: channel.title().to_string(),
+                url: url.to_string(),
 
-        self.stories.extend(stories);
-        self.subscriptions.insert(Subscription {
-            name: channel.title.clone(),
-            url: channel.link.clone(),
-        });
+                stories: HashMap::default(),
+            });
+
+        for item in channel.items() {
+            let story = Story::try_from(item)?;
+
+            subscription
+                .stories
+                .entry(story.link.clone())
+                .or_insert(story);
+        }
+
+        Ok(())
+    }
+
+    pub fn save(&self) -> Result<(), Error> {
+        if !self.directory.exists() {
+            create_dir_all(&self.directory)?;
+        }
+
+        let file = File::create(self.directory.join("subscriptions.json"))?;
+        let writer = BufWriter::new(file);
+        serde_json::to_writer(writer, &self.subscriptions)?;
 
         Ok(())
     }
 
     pub fn subscriptions(&self) -> Vec<Subscription> {
-        let mut subscriptions: Vec<Subscription> = self.subscriptions.iter().cloned().collect();
+        let mut subscriptions: Vec<Subscription> = self.subscriptions.values().cloned().collect();
 
         subscriptions.sort_by(|a, b| a.name.cmp(&b.name));
 
@@ -52,7 +92,12 @@ impl Manager {
     }
 
     pub fn stories(&self) -> Vec<Story> {
-        let mut stories: Vec<Story> = self.stories.iter().cloned().collect();
+        let mut stories: Vec<Story> = self
+            .subscriptions
+            .values()
+            .flat_map(|s| s.stories.values())
+            .cloned()
+            .collect();
 
         stories.sort_by(|a, b| b.pub_date.cmp(&a.pub_date));
 
@@ -60,18 +105,24 @@ impl Manager {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, specta::Type)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
 pub struct Subscription {
     pub name: String,
     pub url: String,
+
+    stories: HashMap<String, Story>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, specta::Type)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
 pub struct Story {
     title: String,
     link: String,
     content: String,
     pub_date: DateTime<Local>,
+
+    starred: bool,
+    read: bool,
 }
 
 #[derive(Debug, PartialEq, thiserror::Error)]
@@ -110,6 +161,9 @@ impl TryFrom<&crate::rss::Item> for Story {
             link: link.to_string(),
             content: ammonia::clean(content),
             pub_date,
+
+            starred: false,
+            read: false,
         };
 
         Ok(story)
@@ -147,11 +201,10 @@ mod tests {
 
         let mut channel = rss::Channel::default();
         channel.set_title("Test Channel");
-        channel.set_link("http://example.com/feed");
         channel.set_items(vec![item]);
 
-        let mut manager = Manager::new();
-        manager.ingest(&channel)?;
+        let mut manager = Manager::default();
+        manager.ingest("http://example.com/feed", &channel)?;
 
         let subscriptions = manager.subscriptions();
         assert_eq!(subscriptions.len(), 1);

@@ -24,5 +24,5 @@ export function refresh() {
     return invoke<null>("refresh")
 }
 
-export type Story = { title: string; link: string; content: string; pub_date: string }
-export type Subscription = { name: string; url: string }
+export type Subscription = { name: string; url: string; stories: { [key: string]: Story } }
+export type Story = { title: string; link: string; content: string; pubDate: string; starred: boolean; read: boolean }

@@ -34,7 +34,7 @@ export default function StoryList() {
             <button className="font-bold" onClick={() => setStory(story)}>
               {story.title}
             </button>{' '}
-            {formatRelativeDistance(story.pub_date)} ago
+            {formatRelativeDistance(story.pubDate)} ago
           </h3>
         </li>
       ))}
