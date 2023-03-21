@@ -21,7 +21,7 @@ describe('StoryList', () => {
         title: 'Test Story',
         content: 'This is a test',
         link: 'https://example.com',
-        pub_date: '2023-03-15',
+        pubDate: '2023-03-15',
       },
     ]);
 
@@ -38,7 +38,7 @@ describe('StoryList', () => {
       title: 'Test Story',
       content: 'This is a test',
       link: 'https://example.com',
-      pub_date: '2023-03-15',
+      pubDate: '2023-03-15',
     };
     invokeMock.mockResolvedValue([story]);
 

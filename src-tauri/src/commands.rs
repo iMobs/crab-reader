@@ -44,17 +44,15 @@ pub async fn get_subscriptions(
 #[tauri::command]
 #[specta::specta]
 pub async fn add_feed(
-    url: String,
+    url: &str,
     manager: tauri::State<'_, RwLock<feed::Manager>>,
     window: tauri::Window,
 ) -> CommandResult<()> {
-    let feed = rss::get_channel(&url).await?;
-    manager.write().await.ingest(&feed)?;
+    let channel = rss::get_channel(url).await?;
+    manager.write().await.ingest(url, &channel)?;
+    manager.read().await.save()?;
 
-    // TODO: find a way to emit without a dummy value
-    window.emit("feed-refresh", 0)?;
-
-    Ok(())
+    feed_refresh(&manager, &window).await.map_err(Into::into)
 }
 
 #[tauri::command]
@@ -64,7 +62,7 @@ pub async fn refresh(
     window: tauri::Window,
 ) -> CommandResult<()> {
     for subscription in manager.read().await.subscriptions() {
-        let channel = match rss::get_channel(subscription.url).await {
+        let channel = match rss::get_channel(&subscription.url).await {
             Ok(channel) => channel,
             Err(e) => {
                 log::error!("failed to fetch {}: {}", subscription.name, e);
@@ -72,13 +70,19 @@ pub async fn refresh(
             }
         };
 
-        if let Err(e) = manager.write().await.ingest(&channel) {
+        if let Err(e) = manager.write().await.ingest(&subscription.url, &channel) {
             log::error!("failed to ingest {}: {}", channel.title, e);
         }
     }
 
-    // TODO: find a way to emit without a dummy value
-    window.emit("feed-refresh", 0)?;
+    manager.read().await.save()?;
 
-    Ok(())
+    feed_refresh(&manager, &window).await.map_err(Into::into)
+}
+
+async fn feed_refresh(
+    manager: &RwLock<feed::Manager>,
+    window: &tauri::Window,
+) -> Result<(), tauri::Error> {
+    window.emit("feed-refresh", manager.read().await.subscriptions())
 }
