@@ -34,8 +34,10 @@ pub enum Error {
 }
 
 impl Manager {
+    const FILENAME: &str = "subscriptions.json";
+
     pub fn load(directory: PathBuf) -> Self {
-        let subscriptions = if let Ok(file) = File::open(directory.join("subscriptions.json")) {
+        let subscriptions = if let Ok(file) = File::open(directory.join(Self::FILENAME)) {
             let reader = BufReader::new(file);
             serde_json::from_reader(reader).unwrap_or_default()
         } else {
@@ -76,7 +78,7 @@ impl Manager {
             create_dir_all(&self.directory)?;
         }
 
-        let file = File::create(self.directory.join("subscriptions.json"))?;
+        let file = File::create(self.directory.join(Self::FILENAME))?;
         let writer = BufWriter::new(file);
         serde_json::to_writer(writer, &self.subscriptions)?;
 
