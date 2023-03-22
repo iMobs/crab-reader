@@ -6,7 +6,7 @@ use std::{
     str::FromStr,
 };
 
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, NaiveDate};
 use serde::{Deserialize, Serialize};
 
 /// This is the in memory manager to handle storing subscriptions and stories.
@@ -37,11 +37,26 @@ impl Manager {
     const FILENAME: &str = "subscriptions.json";
 
     pub fn load(directory: PathBuf) -> Self {
-        let subscriptions = if let Ok(file) = File::open(directory.join(Self::FILENAME)) {
-            let reader = BufReader::new(file);
-            serde_json::from_reader(reader).unwrap_or_default()
+        let file_path = directory.join(Self::FILENAME);
+
+        let subscriptions = if file_path.exists() {
+            log::debug!("opening {file_path:?}");
+
+            match File::open(directory.join(Self::FILENAME)) {
+                Ok(file) => match serde_json::from_reader(BufReader::new(file)) {
+                    Ok(subscriptions) => subscriptions,
+                    Err(e) => {
+                        log::warn!("failed to parse: {e}");
+                        Default::default()
+                    }
+                },
+                Err(e) => {
+                    log::warn!("failed to open: {e}");
+                    Default::default()
+                }
+            }
         } else {
-            HashMap::new()
+            Default::default()
         };
 
         Self {
@@ -51,11 +66,14 @@ impl Manager {
     }
 
     pub fn ingest(&mut self, url: &str, channel: &rss::Channel) -> Result<(), Error> {
+        let name = channel.title();
+        log::debug!("ingesting {name}");
+
         let subscription = self
             .subscriptions
-            .entry(url.to_string())
+            .entry(name.to_string())
             .or_insert_with(|| Subscription {
-                name: channel.title().to_string(),
+                name: name.to_string(),
                 url: url.to_string(),
 
                 stories: HashMap::default(),
@@ -177,6 +195,14 @@ fn parse_date(date: &str) -> Result<DateTime<Local>, TryFromError> {
         FromStr::from_str,
         DateTime::parse_from_rfc2822,
         DateTime::parse_from_rfc3339,
+        |s: &str| {
+            let datetime = NaiveDate::parse_from_str(s, "%Y-%m-%d")?
+                .and_time(Default::default())
+                .and_local_timezone(Local)
+                .unwrap();
+
+            Ok(datetime.into())
+        },
     ];
 
     for parser in parsers {
