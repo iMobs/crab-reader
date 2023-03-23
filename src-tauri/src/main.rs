@@ -34,6 +34,7 @@ fn main() -> anyhow::Result<()> {
                 } else {
                     log::LevelFilter::Info
                 })
+                .filter(|metadata| metadata.target().starts_with("crab_reader"))
                 .build(),
         )
         .invoke_handler(tauri::generate_handler![

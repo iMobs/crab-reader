@@ -48,9 +48,10 @@ pub async fn add_feed(
     manager: tauri::State<'_, RwLock<feed::Manager>>,
     window: tauri::Window,
 ) -> CommandResult<()> {
+    let mut manager = manager.write().await;
     let channel = rss::get_channel(url).await?;
-    manager.write().await.ingest(url, &channel)?;
-    manager.read().await.save()?;
+    manager.ingest(url, &channel)?;
+    manager.save()?;
 
     feed_refresh(&manager, &window).await.map_err(Into::into)
 }
@@ -61,7 +62,11 @@ pub async fn refresh(
     manager: tauri::State<'_, RwLock<feed::Manager>>,
     window: tauri::Window,
 ) -> CommandResult<()> {
-    for subscription in manager.read().await.subscriptions() {
+    let mut manager = manager.write().await;
+    log::debug!("refreshing subscriptions");
+
+    for subscription in manager.subscriptions() {
+        log::debug!("fetching {}", subscription.url);
         let channel = match rss::get_channel(&subscription.url).await {
             Ok(channel) => channel,
             Err(e) => {
@@ -70,19 +75,17 @@ pub async fn refresh(
             }
         };
 
-        if let Err(e) = manager.write().await.ingest(&subscription.url, &channel) {
+        if let Err(e) = manager.ingest(&subscription.url, &channel) {
             log::error!("failed to ingest {}: {}", channel.title, e);
         }
     }
 
-    manager.read().await.save()?;
+    log::debug!("saving subscriptions");
+    manager.save()?;
 
     feed_refresh(&manager, &window).await.map_err(Into::into)
 }
 
-async fn feed_refresh(
-    manager: &RwLock<feed::Manager>,
-    window: &tauri::Window,
-) -> Result<(), tauri::Error> {
-    window.emit("feed-refresh", manager.read().await.subscriptions())
+async fn feed_refresh(manager: &feed::Manager, window: &tauri::Window) -> Result<(), tauri::Error> {
+    window.emit("feed-refresh", manager.subscriptions())
 }
