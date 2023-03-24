@@ -27,6 +27,7 @@ chrono = "0.4.24"
 specta = { version = "1.0.0", features = ["chrono"] }
 tauri-specta = { version = "1.0.0", features = ["typescript"] }
 ammonia = "3.3.0"
+strum = { version = "0.24.1", features = ["derive"] }
 
 [dev-dependencies]
 mockito = "1.0.0"

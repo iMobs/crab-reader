@@ -3,6 +3,7 @@
 
 mod commands;
 mod feed;
+mod menu;
 mod rss;
 
 use anyhow::Context;
@@ -22,6 +23,8 @@ fn main() -> anyhow::Result<()> {
     )?;
 
     tauri::Builder::default()
+        .menu(menu::create_menu())
+        .on_menu_event(menu::handle_event)
         .plugin(
             tauri_plugin_log::Builder::default()
                 .targets([
