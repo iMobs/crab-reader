@@ -30,7 +30,7 @@ ammonia = "3.3.0"
 strum = { version = "0.24.1", features = ["derive"] }
 
 [dev-dependencies]
-mockito = "1.0.0"
+mockito = "1.0.1"
 tokio = { version = "1.26.0", features = ["full"] }
 
 [features]
