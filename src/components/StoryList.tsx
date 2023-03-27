@@ -27,15 +27,18 @@ export default function StoryList() {
   };
 
   return (
-    <ul className="h-screen">
+    <ul className="overflow-auto pt-4">
       {stories.map((story) => (
-        <li key={story.link}>
-          <h3>
-            <button className="font-bold" onClick={() => setStory(story)}>
-              {story.title}
-            </button>{' '}
-            {formatRelativeDistance(story.pubDate)} ago
-          </h3>
+        <li
+          key={story.link}
+          className="p-2 [&:not(:last-child)]:border-b dark:border-gray-500"
+        >
+          <button className="flex" onClick={() => setStory(story)}>
+            <h3 className="font-bold dark:text-gray-200">{story.title}</h3>
+            <span className="ml-auto">
+              {formatRelativeDistance(story.pubDate)} ago
+            </span>
+          </button>
         </li>
       ))}
     </ul>

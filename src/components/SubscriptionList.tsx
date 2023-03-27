@@ -24,7 +24,7 @@ export default function SubscriptionList() {
   };
 
   return (
-    <ul>
+    <ul className="overflow-scroll">
       {urls.map((subscription) => (
         <li key={subscription.name}>{subscription.name}</li>
       ))}
