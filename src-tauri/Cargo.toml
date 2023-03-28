@@ -13,7 +13,7 @@ edition = "2021"
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = ["shell-open"] }
+tauri = { version = "1.2", features = ["dialog", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4.17"
@@ -28,6 +28,7 @@ specta = { version = "1.0.0", features = ["chrono"] }
 tauri-specta = { version = "1.0.0", features = ["typescript"] }
 ammonia = "3.3.0"
 strum = { version = "0.24.1", features = ["derive"] }
+opml = "1.1.5"
 
 [dev-dependencies]
 mockito = "1.0.1"
