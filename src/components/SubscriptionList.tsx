@@ -87,10 +87,7 @@ function SubscriptionListItem({
                       onClick={onRemove}
                       className={clsx(
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                        {
-                          'bg-violet-500 text-white': active,
-                          'text-gray-900': !active,
-                        },
+                        active ? 'bg-violet-500 text-white' : 'text-gray-900',
                       )}
                     >
                       <TrashIcon className="h-5 w-5 mr-1" aria-hidden />
