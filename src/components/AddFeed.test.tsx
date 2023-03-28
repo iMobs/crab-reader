@@ -91,7 +91,7 @@ describe('AddFeed', () => {
     await user.click(getByRole('button', { name: /add/i }));
 
     // invoke was called
-    expect(invokeMock).toHaveBeenCalledWith('add_feed', {
+    expect(invokeMock).toHaveBeenCalledWith('add_subscription', {
       url: 'https://example.com/feed.xml',
     });
 

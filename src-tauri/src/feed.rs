@@ -103,6 +103,10 @@ impl Manager {
         Ok(())
     }
 
+    pub fn remove_subscription(&mut self, name: &str) {
+        self.subscriptions.remove(&name.to_string());
+    }
+
     pub fn subscriptions(&self) -> Vec<Subscription> {
         let mut subscriptions: Vec<Subscription> = self.subscriptions.values().cloned().collect();
 
