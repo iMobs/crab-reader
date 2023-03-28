@@ -43,7 +43,7 @@ pub async fn get_subscriptions(
 
 #[tauri::command]
 #[specta::specta]
-pub async fn add_feed(
+pub async fn add_subscription(
     url: &str,
     manager: tauri::State<'_, RwLock<feed::Manager>>,
     window: tauri::Window,
@@ -53,7 +53,21 @@ pub async fn add_feed(
     manager.ingest(url, &channel)?;
     manager.save()?;
 
-    feed_refresh(&manager, &window).await.map_err(Into::into)
+    feed_refresh(&manager, &window).await
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn remove_subscription(
+    name: &str,
+    manager: tauri::State<'_, RwLock<feed::Manager>>,
+    window: tauri::Window,
+) -> CommandResult<()> {
+    let mut manager = manager.write().await;
+    manager.remove_subscription(name);
+    manager.save()?;
+
+    feed_refresh(&manager, &window).await
 }
 
 #[tauri::command]
@@ -83,9 +97,10 @@ pub async fn refresh(
     log::debug!("saving subscriptions");
     manager.save()?;
 
-    feed_refresh(&manager, &window).await.map_err(Into::into)
+    feed_refresh(&manager, &window).await
 }
 
-async fn feed_refresh(manager: &feed::Manager, window: &tauri::Window) -> Result<(), tauri::Error> {
-    window.emit("feed-refresh", manager.subscriptions())
+async fn feed_refresh(manager: &feed::Manager, window: &tauri::Window) -> CommandResult<()> {
+    window.emit("feed-refresh", manager.subscriptions())?;
+    Ok(())
 }

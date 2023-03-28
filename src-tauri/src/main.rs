@@ -18,7 +18,13 @@ use tauri_specta::ts;
 fn main() -> anyhow::Result<()> {
     #[cfg(debug_assertions)]
     ts::export(
-        collect_types![get_stories, get_subscriptions, add_feed, refresh],
+        collect_types![
+            get_stories,
+            get_subscriptions,
+            add_subscription,
+            remove_subscription,
+            refresh
+        ],
         "../src/lib/bindings.ts",
     )?;
 
@@ -43,7 +49,8 @@ fn main() -> anyhow::Result<()> {
         .invoke_handler(tauri::generate_handler![
             get_stories,
             get_subscriptions,
-            add_feed,
+            add_subscription,
+            remove_subscription,
             refresh,
         ])
         .setup(setup_app)

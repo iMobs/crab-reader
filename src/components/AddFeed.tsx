@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import * as log from 'tauri-plugin-log-api';
 import { z } from 'zod';
 
-import { addFeed } from '~/lib/bindings';
+import { addSubscription } from '~/lib/bindings';
 
 export default function AddFeed() {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +76,7 @@ function AddFeedForm({ onClose }: { onClose: () => void }) {
     log.debug(`Adding feed: ${JSON.stringify(data)}`);
 
     try {
-      await addFeed(data.url);
+      await addSubscription(data.url);
       log.debug('success!');
       onClose();
     } catch (error) {

@@ -4,7 +4,11 @@ import clsx from 'clsx';
 import { Fragment, useEffect, useState } from 'react';
 
 import useTauriEvent from '~/hooks/useTauriEvent';
-import { Subscription, getSubscriptions } from '~/lib/bindings';
+import {
+  Subscription,
+  getSubscriptions,
+  removeSubscription,
+} from '~/lib/bindings';
 
 export default function SubscriptionList() {
   const [urls, setUrls] = useState<Subscription[]>([]);
@@ -47,8 +51,12 @@ function SubscriptionListItem({
     // TODO
   };
 
-  const onRemove = () => {
-    // TODO
+  const onRemove = async () => {
+    try {
+      await removeSubscription(subscription.name);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

@@ -16,13 +16,17 @@ export function getSubscriptions() {
     return invoke<Subscription[]>("get_subscriptions")
 }
 
-export function addFeed(url: string) {
-    return invoke<null>("add_feed", { url })
+export function addSubscription(url: string) {
+    return invoke<null>("add_subscription", { url })
+}
+
+export function removeSubscription(name: string) {
+    return invoke<null>("remove_subscription", { name })
 }
 
 export function refresh() {
     return invoke<null>("refresh")
 }
 
-export type Story = { title: string; link: string; content: string; pubDate: string; starred: boolean; read: boolean }
 export type Subscription = { name: string; url: string; stories: { [key: string]: Story } }
+export type Story = { title: string; link: string; content: string; pubDate: string; starred: boolean; read: boolean }
