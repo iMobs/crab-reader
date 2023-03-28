@@ -8,7 +8,7 @@ export default function StoryView() {
   }
 
   return (
-    <div>
+    <div className="overflow-auto">
       <h3 className="font-bold">{story.title}</h3>
       <div
         className="prose dark:prose-invert"
