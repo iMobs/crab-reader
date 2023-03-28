@@ -1,5 +1,6 @@
 use std::{
     io::{BufReader, BufWriter},
+    path::Path,
     str::FromStr,
 };
 
@@ -169,35 +170,15 @@ pub fn handle_event(event: WindowMenuEvent) {
 
                     log::debug!("importing subscriptions from {:?}", path);
 
-                    let file = std::fs::File::open(path).expect("could not open file");
-                    let mut reader = BufReader::new(file);
-
-                    let opml = opml::OPML::from_reader(&mut reader).expect("could not parse opml");
-
                     let app = event.window().app_handle();
                     let manager = app.state::<RwLock<feed::Manager>>();
                     let mut manager = manager.blocking_write();
 
-                    block_on(async {
-                        for outline in opml.body.outlines {
-                            let Some(url) = outline.xml_url else {
-                                log::warn!("no xml url");
-                                continue;
-                            };
-
-                            let channel = match rss::get_channel(&url).await {
-                                Ok(channel) => channel,
-                                Err(e) => {
-                                    log::warn!("could not fetch {}: {}", url, e);
-                                    continue;
-                                }
-                            };
-
-                            if let Err(e) = manager.ingest(&url, &channel) {
-                                log::error!("failed to ingest {}: {}", url, e);
-                            }
-                        }
-                    });
+                    if let Err(e) =
+                        block_on(async { load_subscriptions(&path, &mut manager).await })
+                    {
+                        log::error!("import error: {}", e);
+                    }
 
                     event
                         .window()
@@ -219,37 +200,76 @@ pub fn handle_event(event: WindowMenuEvent) {
                     let app = event.window().app_handle();
                     let manager = app.state::<RwLock<feed::Manager>>();
                     let manager = manager.blocking_read();
-                    let subscriptions = manager.subscriptions();
 
-                    let outlines = subscriptions
-                        .into_iter()
-                        .map(|subscription| opml::Outline {
-                            title: Some(subscription.name),
-                            xml_url: Some(subscription.url),
-                            r#type: Some("rss".to_string()),
-                            ..Default::default()
-                        })
-                        .collect();
-
-                    let title = "Crab Reader".to_string();
-                    let date_created = chrono::offset::Local::now().to_rfc2822();
-                    let head = opml::Head {
-                        title: Some(title),
-                        date_created: Some(date_created),
-                        ..Default::default()
-                    };
-                    let opml = opml::OPML {
-                        head: Some(head),
-                        body: opml::Body { outlines },
-                        ..Default::default()
-                    };
-
-                    let file = std::fs::File::create(path).expect("could not open file");
-                    let mut writer = BufWriter::new(file);
-                    opml.to_writer(&mut writer).expect("could not write opml");
+                    if let Err(e) = save_subscriptions(&path, &manager) {
+                        log::error!("export error: {}", e);
+                    }
                 }),
         }
     } else {
         log::debug!("unhandled menu_id: {}", menu_id);
     }
+}
+
+async fn load_subscriptions(path: &Path, manager: &mut feed::Manager) -> anyhow::Result<()> {
+    log::debug!("importing subscriptions from {:?}", path);
+
+    let file = std::fs::File::open(path)?;
+    let mut reader = BufReader::new(file);
+
+    let opml = opml::OPML::from_reader(&mut reader)?;
+
+    for outline in opml.body.outlines {
+        let Some(url) = outline.xml_url else {
+            log::warn!("no xml url");
+            continue;
+        };
+
+        let channel = match rss::get_channel(&url).await {
+            Ok(channel) => channel,
+            Err(e) => {
+                log::warn!("could not fetch {}: {}", url, e);
+                continue;
+            }
+        };
+
+        if let Err(e) = manager.ingest(&url, &channel) {
+            log::error!("failed to ingest {}: {}", url, e);
+        }
+    }
+
+    Ok(())
+}
+
+fn save_subscriptions(path: &Path, manager: &feed::Manager) -> anyhow::Result<()> {
+    let subscriptions = manager.subscriptions();
+
+    let outlines = subscriptions
+        .into_iter()
+        .map(|subscription| opml::Outline {
+            title: Some(subscription.name),
+            xml_url: Some(subscription.url),
+            r#type: Some("rss".to_string()),
+            ..Default::default()
+        })
+        .collect();
+
+    let title = "Crab Reader".to_string();
+    let date_created = chrono::offset::Local::now().to_rfc2822();
+    let head = opml::Head {
+        title: Some(title),
+        date_created: Some(date_created),
+        ..Default::default()
+    };
+    let opml = opml::OPML {
+        head: Some(head),
+        body: opml::Body { outlines },
+        ..Default::default()
+    };
+
+    let file = std::fs::File::create(path)?;
+    let mut writer = BufWriter::new(file);
+    opml.to_writer(&mut writer)?;
+
+    Ok(())
 }
