@@ -872,9 +872,9 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@*":
-  version "29.5.0"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.0.tgz#337b90bbcfe42158f39c2fb5619ad044bbb518ac"
-  integrity sha512-3Emr5VOl/aoBwnWcH/EFQvlSAmjV+XtV9GGu5mwdYew5vhQh0IUZx/60x0TzHDu09Bi7HMx10t/namdJw5QIcg==
+  version "29.5.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.5.1.tgz#83c818aa9a87da27d6da85d3378e5a34d2f31a47"
+  integrity sha512-tEuVcHrpaixS36w7hpsfLBLpjtMRJUE09/MHXn923LOVojDwyC14cWcfc0rDs0VEfUyYmt/+iX1kxxp+gZMcaQ==
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
@@ -1853,7 +1853,7 @@ define-lazy-prop@^2.0.0:
   resolved "https://registry.yarnpkg.com/define-lazy-prop/-/define-lazy-prop-2.0.0.tgz#3f7ae421129bcaaac9bc74905c98a0009ec9ee7f"
   integrity sha512-Ds09qNh8yw3khSjiJjiUInaGX9xlqZDY7JVryGxdxV7NPeuqQfplOpQ66yJFZut3jLa5zOwkXw1g9EI2uKh4Og==
 
-define-properties@^1.1.3, define-properties@^1.1.4:
+define-properties@^1.1.3, define-properties@^1.1.4, define-properties@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/define-properties/-/define-properties-1.2.0.tgz#52988570670c9eacedd8064f4a990f2405849bd5"
   integrity sha512-xvqAVKGfT1+UAvPwKTVw/njhdQ8ZhXK4lI0bCIuCMrp2up9nPnaDftrLtmpTazqd1o+UY4zgzU+avtMbDP+ldA==
@@ -1932,9 +1932,9 @@ eastasianwidth@^0.2.0:
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.367"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.367.tgz#d9ddc529ba2315fc852b722c359e4a40e86aa742"
-  integrity sha512-mNuDxb+HpLhPGUKrg0hSxbTjHWw8EziwkwlJNkFUj3W60ypigLDRVz04vU+VRsJPi8Gub+FDhYUpuTm9xiEwRQ==
+  version "1.4.368"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.368.tgz#75901f97d3e23da2e66feb1e61fbb8e70ac96430"
+  integrity sha512-e2aeCAixCj9M7nJxdB/wDjO6mbYX+lJJxSJCXDzlr5YPGYVofuJwGN9nKg2o6wWInjX6XmxRinn3AeJMK81ltw==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -1947,9 +1947,9 @@ emoji-regex@^9.2.2:
   integrity sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==
 
 enhanced-resolve@^5.12.0:
-  version "5.12.0"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.12.0.tgz#300e1c90228f5b570c4d35babf263f6da7155634"
-  integrity sha512-QHTXI/sZQmko1cbDoNAa3mJ5qhWUUNAq3vR0/YiD379fWQrcfuoX1+HW2S0MTt7XmoPLapdaDKUtelUSPic7hQ==
+  version "5.13.0"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.13.0.tgz#26d1ecc448c02de997133217b5c1053f34a0a275"
+  integrity sha512-eyV8f0y1+bzyfh8xAwW/WTSZpLbjhqc4ne9eGSH4Zo2ejdyiNG9pU6mf9DG8a7+Auk6MFTlNOT4Y2y/9k8GKVg==
   dependencies:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
@@ -2512,7 +2512,7 @@ function.prototype.name@^1.1.5:
     es-abstract "^1.19.0"
     functions-have-names "^1.2.2"
 
-functions-have-names@^1.2.2:
+functions-have-names@^1.2.2, functions-have-names@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
@@ -4216,13 +4216,13 @@ regenerator-runtime@^0.13.11:
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regexp.prototype.flags@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/regexp.prototype.flags/-/regexp.prototype.flags-1.4.3.tgz#87cab30f80f66660181a3bb7bf5981a872b367ac"
-  integrity sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/regexp.prototype.flags/-/regexp.prototype.flags-1.5.0.tgz#fe7ce25e7e4cca8db37b6634c8a2c7009199b9cb"
+  integrity sha512-0SutC3pNudRKgquxGoRGIz946MZVHqbNfPjBdxeOhBrdgDKlRoXmYLQN9xRbrR09ZXWeGAdPuif7egofn6v5LA==
   dependencies:
     call-bind "^1.0.2"
-    define-properties "^1.1.3"
-    functions-have-names "^1.2.2"
+    define-properties "^1.2.0"
+    functions-have-names "^1.2.3"
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -4299,7 +4299,7 @@ rimraf@^3.0.2:
   dependencies:
     glob "^7.1.3"
 
-rollup@^3.18.0:
+rollup@^3.20.2:
   version "3.20.6"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-3.20.6.tgz#53c0fd73e397269d2ce5f0ec12851457dd53cacd"
   integrity sha512-2yEB3nQXp/tBQDN0hJScJQheXdvU2wFhh6ld7K/aiZ1vYcak6N/BKjY1QrU6BvO2JWYS8bEs14FRaxXosxy2zw==
@@ -5035,14 +5035,13 @@ vite-node@0.30.1:
     vite "^3.0.0 || ^4.0.0"
 
 "vite@^3.0.0 || ^4.0.0", vite@^4.0.0:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-4.2.2.tgz#014c30e5163844f6e96d7fe18fbb702236516dc6"
-  integrity sha512-PcNtT5HeDxb3QaSqFYkEum8f5sCVe0R3WK20qxgIvNBZPXU/Obxs/+ubBMeE7nLWeCo2LDzv+8hRYSlcaSehig==
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-4.3.0.tgz#1fb9432e1980cf254e1ae1b7b8981fd262c6aa49"
+  integrity sha512-JTGFgDh3dVxeGBpuQX04Up+JZmuG6wu9414Ei36vQzaEruY/M4K0AgwtuB2b4HaBgB7R8l+LHxjB0jcgz4d2qQ==
   dependencies:
     esbuild "^0.17.5"
     postcss "^8.4.21"
-    resolve "^1.22.1"
-    rollup "^3.18.0"
+    rollup "^3.20.2"
   optionalDependencies:
     fsevents "~2.3.2"
 
