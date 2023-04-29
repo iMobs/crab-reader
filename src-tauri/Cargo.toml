@@ -19,7 +19,7 @@ serde_json = "1.0"
 log = "0.4.17"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", version = "0.1.0" }
 reqwest = "0.11.17"
-anyhow = "1.0.70"
+anyhow = "1.0.71"
 thiserror = "1.0.40"
 futures = "0.3.28"
 rss = { version = "2.0.3", features = ["with-serde"] }
