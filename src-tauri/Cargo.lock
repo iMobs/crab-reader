@@ -3026,9 +3026,9 @@ dependencies = [
 
 [[package]]
 name = "specta"
-version = "1.0.3"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95aa33f3135e656964f468db8369ac8e0b77ac957fe8cf335960202d68966d3b"
+checksum = "7230ab99f7b726fa49e350886816dbe5b5b151a5f4158470f92850246d5cae5e"
 dependencies = [
  "chrono",
  "document-features",
@@ -3044,9 +3044,9 @@ dependencies = [
 
 [[package]]
 name = "specta-macros"
-version = "1.0.2"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "123bd8f0d65f556dce3d0e84346b759ad9701c49700cd9aa12c522bd0310d90b"
+checksum = "6252ed50d005e1dc2b77ed140f1c230299e0566492470eba40ba34e18cbcfa10"
 dependencies = [
  "Inflector",
  "itertools",
