@@ -32,7 +32,7 @@ opml = "1.1.5"
 
 [dev-dependencies]
 mockito = "1.1.0"
-tokio = { version = "1.28.2", features = ["full"] }
+tokio = { version = "1.29.0", features = ["full"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
