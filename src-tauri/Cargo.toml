@@ -20,7 +20,7 @@ log = "0.4.19"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", version = "0.1.0" }
 reqwest = "0.11.18"
 anyhow = "1.0.71"
-thiserror = "1.0.41"
+thiserror = "1.0.43"
 futures = "0.3.28"
 rss = { version = "2.0.4", features = ["with-serde"] }
 chrono = "0.4.26"
