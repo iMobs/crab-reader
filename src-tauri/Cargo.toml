@@ -24,7 +24,7 @@ thiserror = "1.0.43"
 futures = "0.3.28"
 rss = { version = "2.0.4", features = ["with-serde"] }
 chrono = "0.4.26"
-specta = { version = "1.0.4", features = ["chrono"] }
+specta = { version = "1.0.5", features = ["chrono"] }
 tauri-specta = { version = "1.0.2", features = ["typescript"] }
 ammonia = "3.3.0"
 strum = { version = "0.25.0", features = ["derive"] }
