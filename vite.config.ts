@@ -41,7 +41,7 @@ export default defineConfig(async () => ({
     setupFiles: './src/test-setup.ts',
     coverage: {
       enabled: true,
-      provider: 'c8',
+      provider: 'v8',
       statements: 80,
       branches: 80,
       functions: 80,
