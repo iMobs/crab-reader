@@ -22,7 +22,7 @@ reqwest = "0.11.18"
 anyhow = "1.0.72"
 thiserror = "1.0.44"
 futures = "0.3.28"
-rss = { version = "2.0.5", features = ["with-serde"] }
+rss = { version = "2.0.6", features = ["with-serde"] }
 chrono = "0.4.26"
 specta = { version = "1.0.5", features = ["chrono"] }
 tauri-specta = { version = "1.0.2", features = ["typescript"] }
