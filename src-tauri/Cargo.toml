@@ -23,7 +23,7 @@ anyhow = "1.0.75"
 thiserror = "1.0.48"
 futures = "0.3.28"
 rss = { version = "2.0.6", features = ["with-serde"] }
-chrono = "0.4.29"
+chrono = "0.4.30"
 specta = { version = "1.0.5", features = ["chrono"] }
 tauri-specta = { version = "1.0.2", features = ["typescript"] }
 ammonia = "3.3.0"
