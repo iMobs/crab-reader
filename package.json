@@ -26,8 +26,8 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.4.4",
-    "@commitlint/config-conventional": "^17.4.4",
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
     "@tailwindcss/typography": "^0.5.9",
     "@tauri-apps/cli": "^1.2.2",
     "@testing-library/dom": "^9.0.1",
